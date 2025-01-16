@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "gorgias-developers",
+      "source": "@gorgias-developers/v1.0#6dh316m2oq4xot",
+      "integrity": "sha512-ywTV6yclZ4CqHoB2Un1QfIdvcX4VVfL+iH7JEhVN7xnkFypbHBRrTG16K7HAPYoiz1EWPXtZ02Cdwh6626GlYQ==",
+      "installerVersion": "6.1.2"
+    }
+  ]
+}

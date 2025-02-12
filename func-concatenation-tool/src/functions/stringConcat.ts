@@ -13,7 +13,7 @@ export async function stringConcat(
   context: InvocationContext
 ): Promise<HttpResponseInit> {
   context.log(`Http function processed request for url "${request.url}"`);
-  const name = process.env.USERNAME;
+  const name = process.env.GORGIAS_USER;
   const password = process.env.GORGIAS_KEY;
   const credentials = `${name}:${password}`;
   const base64Creds = btoa(credentials);

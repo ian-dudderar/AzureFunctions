@@ -13,9 +13,8 @@ export async function stringConcat(
   context: InvocationContext
 ): Promise<HttpResponseInit> {
   context.log(`Http function processed request for url "${request.url}"`);
-  const name = "jlipo@maxwoodfurniture.com";
-  const password =
-    "d596e31ce95d9f9cc21c46b04a1970db835e8c97a36c31609a9295986e4ad1b1";
+  const name = process.env.USERNAME;
+  const password = process.env.GORGIAS_KEY;
   const credentials = `${name}:${password}`;
   const base64Creds = btoa(credentials);
 
@@ -55,11 +54,7 @@ export async function stringConcat(
   const ticketNum = request.query.get("ticketNum");
   const representativeEmail = request.query.get("representative");
 
-  console.log("TICKET NUM: ", ticketNum);
-  console.log("REPRESENTATIVE: ", representativeEmail);
-
   if (!ticketNum || !representativeEmail) {
-    console.log("failing here");
     const stringResponse =
       "Please provide a ticket number and representative email.";
     return {
@@ -70,7 +65,7 @@ export async function stringConcat(
 
   // We have a standard way of formatting the representative, except with grace who has been here a long time, so we have to hard code hers.
   const representative =
-    representativeEmail === "gverrochi@maxwoodfurniture.com"
+    representativeEmail === process.env.GRACE
       ? "GRACE"
       : representativeEmail.split("@")[0].toUpperCase();
 
@@ -78,8 +73,9 @@ export async function stringConcat(
 
   console.log("fetching data from gorgias...");
   try {
+    const url = process.env.GORGIAS_BASE_URL;
     response = await fetch(
-      `https://maxwoodfurniture.gorgias.com/api/tickets/${ticketNum}/custom-fields`,
+      `${url}/api/tickets/${ticketNum}/custom-fields`,
       options
     );
   } catch (e) {
@@ -90,9 +86,7 @@ export async function stringConcat(
       headers: { "Content-Type": "application/json" },
     };
   }
-  console.log(response);
   const data = await response.json();
-  console.log(data);
   if (data.data) {
     for (const object of data.data) {
       const field = object.field.label;
@@ -143,29 +137,13 @@ export async function stringConcat(
     };
   }
 
-  //We need the prepended 0 for single digit reason codes due to formatting, excel is really annoying about displaying those.
-  // if (reasonCode < 10) {
-  //   reasonCode = `0${reasonCode}`;
-  // }
-
   const stringResponse = `SKU${sku}|KG${kitGroup}|RC${reasonCode}|DOC${doc}|REP${representative}|TIX${ticketNum}`;
-  console.log(stringResponse);
 
   return {
     body: JSON.stringify({ response: stringResponse }),
     headers: { "Content-Type": "application/json" },
   };
 }
-
-// Again, used to parse the body of the post request before we switched to a get.
-
-// function parseQueryStringToJson(queryString) {
-//   return queryString.split("&").reduce((acc, pair) => {
-//     const [key, value] = pair.split("=");
-//     acc[key] = value;
-//     return acc;
-//   }, {});
-// }
 
 app.http("stringConcat", {
   methods: ["GET", "POST"],

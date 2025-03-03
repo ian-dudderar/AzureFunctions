@@ -98,7 +98,7 @@ export async function stringConcat(
           break;
         case "Reason Codes":
           console.log("setting reason codes to...", value);
-          reasonCode = value;
+          reasonCode = value.trim();
           break;
         case "Kit Group":
           console.log("setting kit group to...", value);
